@@ -8,25 +8,40 @@
 # Created/Modified: 09/25/15
 ############################################################################################
 
+
   ## function makeCacheMatrix:
   ##  The first function, creates a special matrix, which is really a list containing functions to
   ##    set the value of the matrix, get the value of the matrix
   ##    set the inverse of the matrix, and get the inverse of the matrix
   
   makeCacheMatrix <- function(x = matrix()) {
-    m <- NULL
+    
+    # initialize inverse matrix
+    im <- NULL
+    
+    # function to set/store the matrix and reset inverse matrix to NULL as the matrix was changes
     set <- function(y) {
       x <<- y
-      m <<- NULL
+      im <<- NULL
     }
+    
+    # function to return the stored matrix
     get <- function() x
-    setInverse <- function(solve) m <<- solve
-    getInverse <- function() m
-    list(set = set, get = get,
+    
+    # function to store the value of the inverse matrix in the main function
+    setInverse <- function(solve) im <<- solve
+    
+    # function to return the value of the stored inverse matrix 
+    getInverse <- function() im
+    
+    # To return all the 4 functions, as a list, so that they are accessible when we create a matrix with makeCacheMatrix to an object
+    list(set = set, 
+         get = get,
          setInverse = setInverse,
          getInverse = getInverse)
     
   }
+  
   
   
   ## Function cacheSolve:
@@ -35,16 +50,31 @@
   ##    if not it will compute the inverse matrix, store it in the memory (special matrix), and return the inverse matrix 
   
   cacheSolve <- function(x, ...) {
-    ## Return a matrix that is the inverse of 'x'
-    m <- x$getInverse()
-    if(!is.null(m)) {
+    
+    ## get inverse matrix of special matrix that is created via makeCacheMatrix and stored in the main function 
+    im <- x$getInverse()
+    
+    ## if the value of the inverse matrix returned from the main function is NOT Null return that value
+    ##  (this means value is previously calculated and saved in the main function)
+    if(!is.null(im)) {
       message("getting cached data")
-      return(m)
+      # return the value of inverse matrix (and exit)
+      return(im)
     }
+    
+    ## if the value of the inverse matrix returned is Null then compute inverse matrix
+    
+    ## get the matrix from the main function
     data <- x$get()
-    m <- solve(data, ...)
-    x$setInverse(m)
-    m
+    
+    ## compute the inverse of the matrix using the "solve" funtion
+    im <- solve(data, ...)
+    
+    ## set/save the value of the inverse matrix to the main function
+    x$setInverse(im)
+    
+    ## return inverse matrix
+    im
     
   }
   
